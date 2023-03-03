@@ -8,12 +8,14 @@ const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash');
 const multer = require('multer');
+const dotenv = require ('dotenv');
+
+dotenv.config();
 
 const errorController = require('./controllers/error');
 const User = require('./models/user');
 
-const MONGODB_URI =
-  'mongodb+srv://telefon1234:telefon1234@cluster0.tn8r4ph.mongodb.net/?retryWrites=true&w=majority';
+const MONGODB_URI = process.env.MONGODB_URI;
 
 const app = express();
 const store = new MongoDBStore({
@@ -45,6 +47,7 @@ app.set('views', 'views');
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
+const { use } = require('./routes/admin');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -88,7 +91,7 @@ app.use(errorController.get404);
 mongoose
   .connect(MONGODB_URI)
   .then(result => {
-    app.listen(4000);
+    app.listen(process.env.APP_PORT);
   })
   .catch(err => {
     console.log(err);

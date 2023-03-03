@@ -7,11 +7,11 @@ const { validationResult } = require('express-validator');
 const User = require('../models/user');
 
 const transporter = nodemailer.createTransport({
-  host: 'sandbox.smtp.mailtrap.io',
-   port: 2525,
+  host: process.env.HOST,
+   port: process.env.PORT,
    auth: {
-     user: 'ac628a82a180fc', // your Mailtrap username
-     pass: '00279df5a4d148' //your Mailtrap password
+     user: process.env.USERNAME, // your Mailtrap username
+     pass: process.env.PASSWORD //your Mailtrap password
   }
 });
 
@@ -121,6 +121,7 @@ exports.postSignup = (req, res, next) => {
   const password = req.body.password;
 
   const errors = validationResult(req);
+  console.log('asdsad' ,errors);
   if (!errors.isEmpty()) {
     console.log(errors.array());
     return res.status(422).render('auth/signup', {
@@ -144,7 +145,6 @@ exports.postSignup = (req, res, next) => {
         password: hashedPassword,
         cart: { items: [] }
       });
-      console.log('asd', user);
       return user.save();
     })
     .then(result => {
@@ -203,7 +203,7 @@ exports.postReset = (req, res, next) => {
       res.redirect('/');
       transporter.sendMail({
         to: req.body.email,
-        from: 'nikolailic92fznr@gmail.com',
+        from: process.env.SENT_FROM,
         subject: 'Password reset!',
         html: `<p> You requested a password reset</p>
         <p> Click this link <a href="http://localhost:4000/reset/${token}"> to set a new password </p>`
